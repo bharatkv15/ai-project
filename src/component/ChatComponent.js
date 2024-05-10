@@ -2,13 +2,13 @@ import React from "react";
 import { useEffect, useRef, useState } from "react";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
-import { sendMsgToOpenAI } from "../openai";
-import { Plus, Send } from "lucide-react";
+import { Send } from "lucide-react";
 import SpeechToText from "./SpeechToText";
+import { DrawerComponent } from "./DrawerComponent";
+import { sendMsgToGeminiAI } from "../geminiai";
 
 export const ChatComponent = () => {
   const msgEnd = useRef(null);
-
   const [userInput, setUserInput] = useState("");
   const [messages, setMessages] = useState([
     {
@@ -16,6 +16,8 @@ export const ChatComponent = () => {
       isBot: true,
     },
   ]);
+  const [history, setHistory] = useState([]);
+
   const handleInputChange = (e) => {
     setUserInput(e.target.value);
   };
@@ -24,46 +26,39 @@ export const ChatComponent = () => {
     const text = userInput;
     setUserInput("");
     setMessages([...messages, { text, isBot: false }]);
-    const res = await sendMsgToOpenAI(text);
+    const res = await sendMsgToGeminiAI(text);
+    setHistory([...history, { text: text, message: res }]);
     setMessages([
       ...messages,
       { text, isBot: false },
       { text: res, isBot: true },
     ]);
-    console.log(res);
+  };
+
+  const handleEnter = async (e) => {
+    if (e.key === "Enter") {
+      setUserInput("");
+      await handleUserSearch();
+    }
   };
 
   useEffect(() => {
     msgEnd.current.scrollIntoView();
   }, [messages]);
+
   return (
     <>
-      <div className="sideBar">
-        <div className="upperSide">
-          <div className="upperSideTop">
-            {/* <img src="" alt="" className="logo" /> */}
-            <span className="brand">AI Proj</span>
-          </div>
-          <Button className="midBtn">
-            <Plus />
-            New Chat
-          </Button>
-          <div className="upperSideBottom">
-            <Button className="query">Bharat Testing 1</Button>
-            <Button className="query">Bharat Testing 2</Button>
-          </div>
-        </div>
-        {/* <div className="lowerSide">
-          <div className="listItems">Item 1</div>
-          <div className="listItems">Item 2</div>
-          <div className="listItems">Item 3</div>
-        </div> */}
-      </div>
+      <DrawerComponent
+        setUserInput={setUserInput}
+        setMessages={setMessages}
+        messages={messages}
+        history={history}
+        className="drawer"
+      />
       <div className="main">
         <div className="chats">
           {messages.map((message, index) => (
             <div key={index} className={message.isBot ? "chat bot" : "chat"}>
-              {/* <img src="" alt="" /> */}
               <p className="txt">{message.text}</p>
             </div>
           ))}
@@ -76,12 +71,13 @@ export const ChatComponent = () => {
               name=""
               value={userInput}
               onChange={(e) => handleInputChange(e)}
+              onKeyDown={handleEnter}
               placeholder="Send your query..."
             />
             <Button className="send" onClick={handleUserSearch}>
               <Send className="sendButton" />
             </Button>
-            <Button className="send" onClick={handleUserSearch}>
+            <Button className="send">
               <SpeechToText />
             </Button>
           </div>
