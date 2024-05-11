@@ -148,15 +148,15 @@ body {
 }
 
 .sendButton {
-  width: 16px;
-  height: 16px;
+  width: 2rem;
+  height: 2rem;
 }
 
 .hamburgerIcon {
   display: flex;
-  padding: 24px 8px 0 0;
-  height: 64px;
-  width: 63px;
+  padding: 3rem 1rem 0 0;
+  height: 8rem;
+  width: 8rem;
   position: fixed;
 }
 
@@ -169,4 +169,9 @@ body {
   position: absolute;
     right: 0;
     margin-right: 1.5rem;
+}
+
+.micIcon {
+  width: 2rem;
+  height: 2rem;
 }

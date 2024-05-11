@@ -42,6 +42,10 @@ export const ChatComponent = () => {
     }
   };
 
+  const readTranscript = async (e) => {
+    await setUserInput(e);
+  }
+
   useEffect(() => {
     msgEnd.current.scrollIntoView();
   }, [messages]);
@@ -78,7 +82,7 @@ export const ChatComponent = () => {
               <Send className="sendButton" />
             </Button>
             <Button className="send">
-              <SpeechToText />
+              <SpeechToText readTranscript={readTranscript} />
             </Button>
           </div>
         </div>

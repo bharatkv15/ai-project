@@ -1,5 +1,5 @@
 // Function to convert audio blob to base64 encoded string
-export async function audioBlobToBase64(blob){
+export const googleSpeechToText = (blob) => {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.onloadend = () => {
@@ -16,3 +16,4 @@ export async function audioBlobToBase64(blob){
     reader.readAsArrayBuffer(blob);
   });
 };
+
