@@ -1,6 +1,5 @@
-import axios from "axios";
 import React, { useState, useEffect } from "react";
-import { googleSpeechToText } from "../googleSpeechToText";
+import { googleSpeechToText, googleSpeechToTextCallApi } from "../googleSpeechToText";
 import { Mic, MicOff } from "lucide-react";
 
 const SpeechToText = ({ readTranscript }) => {
@@ -21,7 +20,6 @@ const SpeechToText = ({ readTranscript }) => {
     throw new Error("REACT_APP_GOOGLE_API_KEY not found in the environment");
   }
 
-  const apiKey = process.env.REACT_APP_GOOGLE_API_KEY;
   const startRecording = async () => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -40,19 +38,7 @@ const SpeechToText = ({ readTranscript }) => {
         try {
           // const startTime = performance.now();
 
-          const response = await axios.post(
-            `https://speech.googleapis.com/v1/speech:recognize?key=${apiKey}`,
-            {
-              config: {
-                encoding: "WEBM_OPUS",
-                sampleRateHertz: 48000,
-                languageCode: "en-US",
-              },
-              audio: {
-                content: base64Audio,
-              },
-            }
-          );
+          const response = await googleSpeechToTextCallApi(base64Audio);
 
           // const endTime = performance.now();
           // const elapsedTime = endTime - startTime;

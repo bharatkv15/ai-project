@@ -36,7 +36,7 @@ export const ChatComponent = () => {
   };
 
   const handleEnter = async (e) => {
-    if (e.key === "Enter") {
+    if (e.key === "Enter" && userInput !== '') {
       setUserInput("");
       await handleUserSearch();
     }
