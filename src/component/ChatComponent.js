@@ -4,8 +4,8 @@ import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { Send } from "lucide-react";
 import SpeechToText from "./SpeechToText";
-import { DrawerComponent } from "./DrawerComponent";
 import { sendMsgToGeminiAI } from "../geminiai";
+import { SheetSide } from "./SheetComponent";
 
 export const ChatComponent = () => {
   const msgEnd = useRef(null);
@@ -36,7 +36,7 @@ export const ChatComponent = () => {
   };
 
   const handleEnter = async (e) => {
-    if (e.key === "Enter" && userInput !== '') {
+    if (e.key === "Enter" && userInput !== "") {
       setUserInput("");
       await handleUserSearch();
     }
@@ -44,7 +44,7 @@ export const ChatComponent = () => {
 
   const readTranscript = async (e) => {
     await setUserInput(e);
-  }
+  };
 
   useEffect(() => {
     msgEnd.current.scrollIntoView();
@@ -52,12 +52,11 @@ export const ChatComponent = () => {
 
   return (
     <>
-      <DrawerComponent
+      <SheetSide
         setUserInput={setUserInput}
         setMessages={setMessages}
         messages={messages}
         history={history}
-        className="drawer"
       />
       <div className="main">
         <div className="chats">

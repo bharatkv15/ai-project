@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { googleSpeechToText, googleSpeechToTextCallApi } from "../googleSpeechToText";
+import {
+  googleSpeechToText,
+  googleSpeechToTextCallApi,
+} from "../googleSpeechToText";
 import { Mic, MicOff } from "lucide-react";
 
 const SpeechToText = ({ readTranscript }) => {
@@ -25,32 +28,17 @@ const SpeechToText = ({ readTranscript }) => {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       const recorder = new MediaRecorder(stream);
       recorder.start();
-      //      console.log("Recording started");
-
+      //console.log("Recording started");
       // Event listener to handle data availability
       recorder.addEventListener("dataavailable", async (event) => {
-        //       console.log("Data available event triggered");
         const audioBlob = event.data;
-
         const base64Audio = await googleSpeechToText(audioBlob);
-        //console.log('Base64 audio:', base64Audio);
-
         try {
-          // const startTime = performance.now();
-
           const response = await googleSpeechToTextCallApi(base64Audio);
-
-          // const endTime = performance.now();
-          // const elapsedTime = endTime - startTime;
-
-          //console.log('API response:', response);
-          //     console.log("Time taken (ms):", elapsedTime);
-
           if (response.data.results && response.data.results.length > 0) {
             setTranscription(
               response.data.results[0].alternatives[0].transcript
             );
-            
           } else {
             // console.log(
             //   "No transcription results in the API response:",
@@ -81,8 +69,8 @@ const SpeechToText = ({ readTranscript }) => {
   };
 
   useEffect(() => {
-          readTranscript(transcription);
-  },[transcription])
+    readTranscript(transcription);
+  }, [transcription]);
 
   const recordingButton = (
     <div>
