@@ -1,0 +1,15 @@
+{
+  "files": {
+    "main.css": "/ai-project/static/css/main.ff0e68dd.css",
+    "main.js": "/ai-project/static/js/main.a39a1476.js",
+    "static/js/453.c05d26cb.chunk.js": "/ai-project/static/js/453.c05d26cb.chunk.js",
+    "index.html": "/ai-project/index.html",
+    "main.ff0e68dd.css.map": "/ai-project/static/css/main.ff0e68dd.css.map",
+    "main.a39a1476.js.map": "/ai-project/static/js/main.a39a1476.js.map",
+    "453.c05d26cb.chunk.js.map": "/ai-project/static/js/453.c05d26cb.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.ff0e68dd.css",
+    "static/js/main.a39a1476.js"
+  ]
+}
