@@ -96,7 +96,7 @@ const SpeechToText = ({ readTranscript }) => {
 
   useEffect(() => {
           readTranscript(transcription);
-  },[transcription, readTranscript])
+  },[transcription])
 
   const recordingButton = (
     <div>
