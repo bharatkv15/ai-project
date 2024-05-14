@@ -6,7 +6,7 @@ import { Send } from "lucide-react";
 import SpeechToText from "./SpeechToText";
 import { sendMsgToGeminiAI } from "../geminiai";
 import { SheetSide } from "./SheetComponent";
-
+import { useSelector } from "react-redux";
 export const ChatComponent = () => {
   const msgEnd = useRef(null);
   const [userInput, setUserInput] = useState("");
@@ -21,7 +21,12 @@ export const ChatComponent = () => {
   const handleInputChange = (e) => {
     setUserInput(e.target.value);
   };
-
+  const user = useSelector(
+    (state) =>
+      state?.user?.userInfo?.data?.results[0]?.alternatives[0]?.transcript
+  );
+  // setUserInput(user);
+  // console.log(user, "useruse selectorhok");
   const handleUserSearch = async () => {
     const text = userInput;
     setUserInput("");

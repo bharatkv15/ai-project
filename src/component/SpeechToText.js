@@ -4,12 +4,17 @@ import {
   googleSpeechToTextCallApi,
 } from "../googleSpeechToText";
 import { Mic, MicOff } from "lucide-react";
-
+import { useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 const SpeechToText = ({ readTranscript }) => {
   const [recording, setRecording] = useState(false);
   const [mediaRecorder, setMediaRecorder] = useState(null);
   const [transcription, setTranscription] = useState("");
-
+  const dispatch = useDispatch();
+  const user = useSelector(
+    (state) =>
+      state?.user?.userInfo?.data?.results[0]?.alternatives[0]?.transcript
+  );
   // Cleanup function to stop recording and release media resources
   useEffect(() => {
     return () => {
@@ -34,10 +39,16 @@ const SpeechToText = ({ readTranscript }) => {
         const audioBlob = event.data;
         const base64Audio = await googleSpeechToText(audioBlob);
         try {
-          const response = await googleSpeechToTextCallApi(base64Audio);
-          if (response.data.results && response.data.results.length > 0) {
+          const response = await googleSpeechToTextCallApi(
+            base64Audio,
+            dispatch
+          );
+          // console.log("response", response);
+          if (true) {
+            console.log("setTranscription", user);
             setTranscription(
-              response.data.results[0].alternatives[0].transcript
+              user
+              // response?.data?.results[0].alternatives[0].transcript
             );
           } else {
             // console.log(
