@@ -15,7 +15,6 @@ export const updateUser2 = createAsyncThunk("", async (base64Audio) => {
       },
     }
   );
-  console.log("RESPONSE:", response);
   return response;
 });
 
@@ -30,7 +29,6 @@ export const userSlice = createSlice({
   },
   reducers: {},
   extraReducers: (builder) => {
-    // debugger;
     builder.addMatcher(updateUser2.pending, (state) => {
       state.pending = true;
       state.error = false;

@@ -39,7 +39,7 @@ export const SheetSide = ({ setUserInput, setMessages, messages, history }) => {
         </SheetTrigger>
         <SheetContent side="left" className="sheetStyle">
           <SheetHeader>
-            <SheetTitle className='screenTitle'>AI Project</SheetTitle>
+            <SheetTitle className="screenTitle">AI Project</SheetTitle>
           </SheetHeader>
           <div className="sideBar">
             <div className="upperSide">

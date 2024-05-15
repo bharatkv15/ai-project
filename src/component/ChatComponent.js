@@ -31,20 +31,22 @@ export const ChatComponent = () => {
   }, [user]);
 
   const handleUserSearch = async () => {
-    const text = userInput;
-    setUserInput("");
-    setMessages([...messages, { text, isBot: false }]);
-    const res = await sendMsgToGeminiAI(text);
-    setHistory([...history, { text: text, message: res }]);
-    setMessages([
-      ...messages,
-      { text, isBot: false },
-      { text: res, isBot: true },
-    ]);
+    if (userInput !== "" && userInput !== undefined) {
+      const text = userInput;
+      setUserInput("");
+      setMessages([...messages, { text, isBot: false }]);
+      const res = await sendMsgToGeminiAI(text);
+      setHistory([...history, { text: text, message: res }]);
+      setMessages([
+        ...messages,
+        { text, isBot: false },
+        { text: res, isBot: true },
+      ]);
+    }
   };
 
   const handleEnter = async (e) => {
-    if (e.key === "Enter" && user !== "") {
+    if (e.key === "Enter") {
       setUserInput("");
       await handleUserSearch();
     }
