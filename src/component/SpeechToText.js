@@ -1,20 +1,13 @@
 import React, { useState, useEffect } from "react";
-import {
-  googleSpeechToText,
-  googleSpeechToTextCallApi,
-} from "../googleSpeechToText";
+import { googleSpeechToText } from "../googleSpeechToText";
 import { Mic, MicOff } from "lucide-react";
 import { useDispatch } from "react-redux";
-import { useSelector } from "react-redux";
-const SpeechToText = ({ readTranscript }) => {
+import { updateUser2 } from "../Redux/UserSlice";
+const SpeechToText = () => {
   const [recording, setRecording] = useState(false);
   const [mediaRecorder, setMediaRecorder] = useState(null);
-  const [transcription, setTranscription] = useState("");
   const dispatch = useDispatch();
-  const user = useSelector(
-    (state) =>
-      state?.user?.userInfo?.data?.results[0]?.alternatives[0]?.transcript
-  );
+
   // Cleanup function to stop recording and release media resources
   useEffect(() => {
     return () => {
@@ -27,41 +20,18 @@ const SpeechToText = ({ readTranscript }) => {
   if (!process.env.REACT_APP_GOOGLE_API_KEY) {
     throw new Error("REACT_APP_GOOGLE_API_KEY not found in the environment");
   }
-
   const startRecording = async () => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       const recorder = new MediaRecorder(stream);
       recorder.start();
-      //console.log("Recording started");
-      // Event listener to handle data availability
       recorder.addEventListener("dataavailable", async (event) => {
         const audioBlob = event.data;
         const base64Audio = await googleSpeechToText(audioBlob);
         try {
-          const response = await googleSpeechToTextCallApi(
-            base64Audio,
-            dispatch
-          );
-          // console.log("response", response);
-          if (true) {
-            console.log("setTranscription", user);
-            setTranscription(
-              user
-              // response?.data?.results[0].alternatives[0].transcript
-            );
-          } else {
-            // console.log(
-            //   "No transcription results in the API response:",
-            //   response.data
-            // );
-            setTranscription("");
-          }
+          dispatch(updateUser2(base64Audio));
         } catch (error) {
-          console.error(
-            "Error with Google Speech-to-Text API:",
-            error.response.data
-          );
+          console.error("Error with Google Speech-to-Text API:", error);
         }
       });
 
@@ -78,10 +48,6 @@ const SpeechToText = ({ readTranscript }) => {
       setRecording(false);
     }
   };
-
-  useEffect(() => {
-    readTranscript(transcription);
-  }, [transcription]);
 
   const recordingButton = (
     <div>

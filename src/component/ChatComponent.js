@@ -8,6 +8,10 @@ import { sendMsgToGeminiAI } from "../geminiai";
 import { SheetSide } from "./SheetComponent";
 import { useSelector } from "react-redux";
 export const ChatComponent = () => {
+  const user = useSelector(
+    (state) =>
+      state?.user?.userInfo?.data?.results[0]?.alternatives[0]?.transcript
+  );
   const msgEnd = useRef(null);
   const [userInput, setUserInput] = useState("");
   const [messages, setMessages] = useState([
@@ -21,12 +25,11 @@ export const ChatComponent = () => {
   const handleInputChange = (e) => {
     setUserInput(e.target.value);
   };
-  const user = useSelector(
-    (state) =>
-      state?.user?.userInfo?.data?.results[0]?.alternatives[0]?.transcript
-  );
-  // setUserInput(user);
-  // console.log(user, "useruse selectorhok");
+
+  useEffect(() => {
+    setUserInput(user);
+  }, [user]);
+
   const handleUserSearch = async () => {
     const text = userInput;
     setUserInput("");
@@ -41,14 +44,10 @@ export const ChatComponent = () => {
   };
 
   const handleEnter = async (e) => {
-    if (e.key === "Enter" && userInput !== "") {
+    if (e.key === "Enter" && user !== "") {
       setUserInput("");
       await handleUserSearch();
     }
-  };
-
-  const readTranscript = async (e) => {
-    await setUserInput(e);
   };
 
   useEffect(() => {
@@ -77,7 +76,7 @@ export const ChatComponent = () => {
             <Input
               type="text"
               name=""
-              value={userInput}
+              value={userInput || ""}
               onChange={(e) => handleInputChange(e)}
               onKeyDown={handleEnter}
               placeholder="Send your query..."
@@ -86,7 +85,7 @@ export const ChatComponent = () => {
               <Send className="sendButton" />
             </Button>
             <Button className="send">
-              <SpeechToText readTranscript={readTranscript} />
+              <SpeechToText />
             </Button>
           </div>
         </div>

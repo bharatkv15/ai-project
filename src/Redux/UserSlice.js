@@ -1,18 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
-import { debug } from "openai/core";
-
-// export const updateUser2 = createAsyncThunk("users/update", async (user) => {
-//   const response = await axios.post(
-//     "http://localhost:8800/api/users/1/update",
-//     user
-//   );
-//   return response.data;
-// });
 
 export const updateUser2 = createAsyncThunk("", async (base64Audio) => {
-  debugger;
-  //   const apiKey = process.env.REACT_APP_GOOGLE_API_KEY;
   const response = await axios.post(
     `https://speech.googleapis.com/v1/speech:recognize?key=${process.env.REACT_APP_GOOGLE_API_KEY}`,
     {
@@ -26,7 +15,7 @@ export const updateUser2 = createAsyncThunk("", async (base64Audio) => {
       },
     }
   );
-  //   console.log("RESPONSE:", response);
+  console.log("RESPONSE:", response);
   return response;
 });
 
@@ -41,7 +30,7 @@ export const userSlice = createSlice({
   },
   reducers: {},
   extraReducers: (builder) => {
-    debugger;
+    // debugger;
     builder.addMatcher(updateUser2.pending, (state) => {
       state.pending = true;
       state.error = false;
