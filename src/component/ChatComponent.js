@@ -21,6 +21,7 @@ export const ChatComponent = () => {
     },
   ]);
   const [history, setHistory] = useState([]);
+  const [newChatSession, setNewChatSession] = useState(false);
 
   const handleInputChange = (e) => {
     setUserInput(e.target.value);
@@ -36,20 +37,50 @@ export const ChatComponent = () => {
       setUserInput("");
       setMessages([...messages, { text, isBot: false }]);
       const res = await sendMsgToGeminiAI(text);
-      setHistory([...history, { text: text, message: res }]);
       setMessages([
         ...messages,
         { text, isBot: false },
         { text: res, isBot: true },
       ]);
+      if(newChatSession) {
+        setHistory([
+          ...history,
+          {
+            id: text,
+            sessionHistory: [
+              ...messages,
+              { text, isBot: false },
+              { text: res, isBot: true },
+            ],
+          },
+        ]);
+        setNewChatSession(false);
+      } else {
+        setHistory([
+          {
+            id: text,
+            sessionHistory: [
+              ...messages,
+              { text, isBot: false },
+              { text: res, isBot: true },
+            ],
+          },
+        ]);
+      }
     }
   };
+
+  console.log(history);
 
   const handleEnter = async (e) => {
     if (e.key === "Enter") {
       setUserInput("");
       await handleUserSearch();
     }
+  };
+
+  const checkNewChatSession = (e) => {
+    setNewChatSession(e);
   };
 
   useEffect(() => {
@@ -63,6 +94,7 @@ export const ChatComponent = () => {
         setMessages={setMessages}
         messages={messages}
         history={history}
+        checkNewChatSession={checkNewChatSession}
       />
       <div className="main">
         <div className="chats">
