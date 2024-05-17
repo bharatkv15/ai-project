@@ -6,23 +6,28 @@ import {
   SheetTrigger,
 } from "../components/ui/sheet";
 import { Button } from "../components/ui/button";
-import { sendMsgToGeminiAI } from "../geminiai";
 import { Menu, Plus } from "lucide-react";
+import { useState } from "react";
 
-export const SheetSide = ({ setUserInput, setMessages, messages, history }) => {
+export const SheetSide = ({
+  setUserInput,
+  setMessages,
+  messages,
+  history,
+  checkNewChatSession,
+}) => {
   const handleHistoryQuery = async (e) => {
-    const text = e.target.value;
+    //  const text = e.target.value;
     setUserInput("");
-    setMessages([...messages, { text, isBot: false }]);
-    const res = await sendMsgToGeminiAI(text);
-    setMessages([
-      ...messages,
-      { text, isBot: false },
-      { text: res, isBot: true },
-    ]);
+    //  setMessages([...messages, { text, isBot: false }]);
+
+    let result = history.find((obj) => obj.index === e.index);
+    console.log(e);
+    setMessages([...result.sessionHistory]);
   };
 
   const newChat = async () => {
+    checkNewChatSession(true);
     await setMessages([
       {
         text: "Hi! ask your query.",
@@ -30,6 +35,18 @@ export const SheetSide = ({ setUserInput, setMessages, messages, history }) => {
       },
     ]);
   };
+
+  const sessionHistoryButton = history.map((e, index) => (
+    <Button
+      key={index}
+      className="query"
+      onClick={() => handleHistoryQuery(index)}
+      value={e.id}
+    >
+      {e.id}
+      {/* {alert(index)} */}
+    </Button>
+  ));
 
   return (
     <div className="grid grid-cols-2 gap-2">
@@ -48,7 +65,7 @@ export const SheetSide = ({ setUserInput, setMessages, messages, history }) => {
                 New Chat
               </Button>
               <div className="upperSideBottom">
-                {history.map((e, index) => (
+                {/* {history.map((e, index) => (
                   <Button
                     key={index}
                     className="query"
@@ -57,7 +74,30 @@ export const SheetSide = ({ setUserInput, setMessages, messages, history }) => {
                   >
                     {e.text}
                   </Button>
-                ))}
+                ))} */}
+                {sessionHistoryButton}
+                {/* {
+                 history.map((e) => {
+                  <Button
+                  //  key={index}
+                    className="query"
+                    onClick={handleHistoryQuery}
+                    value={e.id}
+                  >
+                    sdfgsd
+                  </Button>
+                 })
+              } */}
+                {/* 
+
+                {history[0]?.text !== undefined ? <Button
+                   // key={index}
+                    className="query"
+                    onClick={handleHistoryQuery}
+                    value={history[0]?.text}
+                  >
+                    {history[0]?.text}
+                  </Button>: null} */}
               </div>
             </div>
           </div>
