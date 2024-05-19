@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { googleSpeechToText } from "../googleSpeechToText";
 import { Mic, MicOff } from "lucide-react";
 import { useDispatch } from "react-redux";
-import { updateUser2 } from "../Redux/UserSlice";
+import { updateUser2 } from "../features/userquery/UserSlice";
 const SpeechToText = () => {
   const [recording, setRecording] = useState(false);
   const [mediaRecorder, setMediaRecorder] = useState(null);

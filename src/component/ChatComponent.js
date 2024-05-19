@@ -7,23 +7,17 @@ import SpeechToText from "./SpeechToText";
 import { sendMsgToGeminiAI } from "../geminiai";
 import { SheetSide } from "./SheetComponent";
 import { useSelector } from "react-redux";
-import { useDispatch } from "react-redux";
-import { updateUser3 } from "../features/userquery/UserSlice2";
 export const ChatComponent = () => {
   const user = useSelector(
     (state) =>
       state?.user?.userInfo?.data?.results[0]?.alternatives[0]?.transcript
   );
   const msgEnd = useRef(null);
-  const dispatch = useDispatch();
   const [userInput, setUserInput] = useState("");
-  const [messages, setMessages] = useState([
-    {
-      text: "Hi! ask your query.",
-      isBot: true,
-    },
-  ]);
+  const [messages, setMessages] = useState([]);
   const [history, setHistory] = useState([]);
+  const [checkKey, setCheckKey] = useState();
+  const [dummyResult, setDummyResult] = useState([]);
   const [newChatSession, setNewChatSession] = useState(false);
 
   const handleInputChange = (e) => {
@@ -41,31 +35,35 @@ export const ChatComponent = () => {
       const res = await sendMsgToGeminiAI(text);
       setMessages([...messages, { key: text, value: res }]);
       if (newChatSession) {
-        let dummyResult = [...history];
+        setDummyResult([...history]);
+        setCheckKey("");
         let temp = {
           id: dummyResult[dummyResult?.length - 1]?.id
             ? dummyResult[dummyResult?.length - 1]?.id + 1
             : 1,
           sessionHistory: [...messages, { key: text, value: res }],
         };
-        dummyResult.push({ ...temp });
+        setDummyResult({ ...temp });
         setHistory([...history, temp]);
         setNewChatSession(false);
       } else {
         let dummyResult = [...history];
-        let result = dummyResult[dummyResult?.length - 1];
+        let result = checkKey
+          ? dummyResult.find((e) => e?.sessionHistory[0]?.key === checkKey)
+          : dummyResult[dummyResult?.length - 1];
         if (result) {
-          result?.sessionHistory?.push(...messages, { key: text, value: res });
+          result?.sessionHistory?.push({ key: text, value: res });
           setHistory([...dummyResult]);
+          setCheckKey();
         } else {
           setHistory([
             {
               sessionHistory: [...messages, { key: text, value: res }],
             },
           ]);
+          setCheckKey();
         }
       }
-      // dispatch(updateUser3(history));
     }
   };
 
@@ -86,19 +84,24 @@ export const ChatComponent = () => {
 
   return (
     <>
-      {console.log(history)}
       <SheetSide
         setUserInput={setUserInput}
         setMessages={setMessages}
         messages={messages}
         history={history}
         checkNewChatSession={checkNewChatSession}
+        setCheckKey={setCheckKey}
       />
       <div className="main">
         <div className="chats">
           {messages.map((message, index) => (
-            <div key={index} className={message.isBot ? "chat bot" : "chat"}>
-              <p className="txt">{message.value}</p>
+            <div key={index}>
+              <div key={`chat-${index}`} className="chat">
+                <p className="txt">{message?.key}</p>
+              </div>
+              <div key={`bot-${index}`} className="chat bot">
+                <p className="txt">{message?.value}</p>
+              </div>
             </div>
           ))}
           <div ref={msgEnd} />

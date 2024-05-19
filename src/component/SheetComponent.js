@@ -7,44 +7,34 @@ import {
 } from "../components/ui/sheet";
 import { Button } from "../components/ui/button";
 import { Menu, Plus } from "lucide-react";
-import { useState } from "react";
 
 export const SheetSide = ({
-  setUserInput,
   setMessages,
-  messages,
   history,
   checkNewChatSession,
+  setCheckKey,
 }) => {
   const handleHistoryQuery = async (e) => {
-    //  const text = e.target.value;
-    setUserInput("");
-    //  setMessages([...messages, { text, isBot: false }]);
-
-    let result = history.find((obj) => obj.index === e.index);
-    console.log(e);
+    let result = history.find(
+      (obj) => obj.sessionHistory[0]?.key === e.sessionHistory[0]?.key
+    );
+    setCheckKey(result.sessionHistory[0].key);
     setMessages([...result.sessionHistory]);
   };
 
   const newChat = async () => {
     checkNewChatSession(true);
-    await setMessages([
-      {
-        text: "Hi! ask your query.",
-        isBot: true,
-      },
-    ]);
+    await setMessages([]);
   };
 
   const sessionHistoryButton = history.map((e, index) => (
     <Button
       key={index}
       className="query"
-      onClick={() => handleHistoryQuery(index)}
-      value={e.id}
+      onClick={() => handleHistoryQuery(e)}
+      value={e?.sessionHistory[0]?.key}
     >
-      {e.id}
-      {/* {alert(index)} */}
+      {e?.sessionHistory[0]?.key}
     </Button>
   ));
 
@@ -64,41 +54,7 @@ export const SheetSide = ({
                 <Plus />
                 New Chat
               </Button>
-              <div className="upperSideBottom">
-                {/* {history.map((e, index) => (
-                  <Button
-                    key={index}
-                    className="query"
-                    onClick={handleHistoryQuery}
-                    value={e.text}
-                  >
-                    {e.text}
-                  </Button>
-                ))} */}
-                {sessionHistoryButton}
-                {/* {
-                 history.map((e) => {
-                  <Button
-                  //  key={index}
-                    className="query"
-                    onClick={handleHistoryQuery}
-                    value={e.id}
-                  >
-                    sdfgsd
-                  </Button>
-                 })
-              } */}
-                {/* 
-
-                {history[0]?.text !== undefined ? <Button
-                   // key={index}
-                    className="query"
-                    onClick={handleHistoryQuery}
-                    value={history[0]?.text}
-                  >
-                    {history[0]?.text}
-                  </Button>: null} */}
-              </div>
+              <div className="upperSideBottom">{sessionHistoryButton}</div>
             </div>
           </div>
         </SheetContent>

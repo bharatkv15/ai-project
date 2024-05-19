@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
-
+ 
 export const updateUser2 = createAsyncThunk("", async (base64Audio) => {
   const response = await axios.post(
     `https://speech.googleapis.com/v1/speech:recognize?key=${process.env.REACT_APP_GOOGLE_API_KEY}`,
@@ -17,7 +17,7 @@ export const updateUser2 = createAsyncThunk("", async (base64Audio) => {
   );
   return response;
 });
-
+ 
 export const userSlice = createSlice({
   name: "user",
   initialState: {
@@ -43,5 +43,6 @@ export const userSlice = createSlice({
     });
   },
 });
-
+ 
 export default userSlice.reducer;
+ 
