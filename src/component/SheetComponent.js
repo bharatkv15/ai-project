@@ -12,13 +12,11 @@ export const SheetSide = ({
   setMessages,
   history,
   checkNewChatSession,
-  setCheckKey,
+  setCheckSessionId,
 }) => {
   const handleHistoryQuery = async (e) => {
-    let result = history.find(
-      (obj) => obj.sessionHistory[0]?.key === e.sessionHistory[0]?.key
-    );
-    setCheckKey(result.sessionHistory[0].key);
+    let result = history.find((obj) => obj?.id === e?.id);
+    setCheckSessionId(result?.id);
     setMessages([...result.sessionHistory]);
   };
 

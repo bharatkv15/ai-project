@@ -16,9 +16,9 @@ export const ChatComponent = () => {
   const [userInput, setUserInput] = useState("");
   const [messages, setMessages] = useState([]);
   const [history, setHistory] = useState([]);
-  const [checkKey, setCheckKey] = useState();
-  const [dummyResult, setDummyResult] = useState([]);
+  const [checkSessionId, setCheckSessionId] = useState(0);
   const [newChatSession, setNewChatSession] = useState(false);
+  const [idCounter, setIdCounter] = useState(0);
 
   const handleInputChange = (e) => {
     setUserInput(e.target.value);
@@ -35,37 +35,35 @@ export const ChatComponent = () => {
       const res = await sendMsgToGeminiAI(text);
       setMessages([...messages, { key: text, value: res }]);
       if (newChatSession) {
-        setDummyResult([...history]);
-        setCheckKey("");
+        setCheckSessionId(0);
         let temp = {
-          id: dummyResult[dummyResult?.length - 1]?.id
-            ? dummyResult[dummyResult?.length - 1]?.id + 1
-            : 1,
+          id: idCounter,
           sessionHistory: [...messages, { key: text, value: res }],
         };
-        setDummyResult({ ...temp });
+        setIdCounter((c) => c + 1);
         setHistory([...history, temp]);
         setNewChatSession(false);
       } else {
         let dummyResult = [...history];
-        let result = checkKey
-          ? dummyResult.find((e) => e?.sessionHistory[0]?.key === checkKey)
-          : dummyResult[dummyResult?.length - 1];
+        let result = dummyResult.find((e) => e?.id === checkSessionId);
         if (result) {
           result?.sessionHistory?.push({ key: text, value: res });
           setHistory([...dummyResult]);
-          setCheckKey();
+          setCheckSessionId(0);
         } else {
           setHistory([
             {
+              id: idCounter,
               sessionHistory: [...messages, { key: text, value: res }],
             },
           ]);
-          setCheckKey();
+          setIdCounter((c) => c + 1);
+          setCheckSessionId(0);
         }
       }
     }
   };
+  console.log(history);
 
   const handleEnter = async (e) => {
     if (e.key === "Enter") {
@@ -90,7 +88,7 @@ export const ChatComponent = () => {
         messages={messages}
         history={history}
         checkNewChatSession={checkNewChatSession}
-        setCheckKey={setCheckKey}
+        setCheckSessionId={setCheckSessionId}
       />
       <div className="main">
         <div className="chats">
