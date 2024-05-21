@@ -4,7 +4,7 @@ import messageReducer from "./features/userquery/MessageSlice";
  
 export default configureStore({
   reducer: {
-    user: speechToTextReducer,
+    speechToText: speechToTextReducer,
     message: messageReducer,
   },
 });
