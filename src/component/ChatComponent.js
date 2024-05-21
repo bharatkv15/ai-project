@@ -6,34 +6,37 @@ import { Send } from "lucide-react";
 import SpeechToText from "./SpeechToText";
 import { sendMsgToGeminiAI } from "../geminiai";
 import { SheetSide } from "./SheetComponent";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { updateMessages } from "../features/userquery/MessageSlice";
 export const ChatComponent = () => {
-  const user = useSelector(
+  const speechToText = useSelector(
     (state) =>
-      state?.user?.userInfo?.data?.results[0]?.alternatives[0]?.transcript
+      state?.speechToText?.speechtoTextInfo?.data?.results[0]?.alternatives[0]?.transcript
   );
+  const messages = useSelector((state) => state?.message?.chatInfo);
   const msgEnd = useRef(null);
   const [userInput, setUserInput] = useState("");
-  const [messages, setMessages] = useState([]);
   const [history, setHistory] = useState([]);
   const [checkSessionId, setCheckSessionId] = useState(0);
   const [newChatSession, setNewChatSession] = useState(false);
   const [idCounter, setIdCounter] = useState(0);
+  const dispatch = useDispatch();
 
   const handleInputChange = (e) => {
     setUserInput(e.target.value);
   };
 
   useEffect(() => {
-    setUserInput(user);
-  }, [user]);
+    setUserInput(speechToText);
+  }, [speechToText]);
 
   const handleUserSearch = async () => {
     if (userInput !== "" && userInput !== undefined) {
       const text = userInput;
       setUserInput("");
       const res = await sendMsgToGeminiAI(text);
-      setMessages([...messages, { key: text, value: res }]);
+      dispatch(updateMessages([...messages, { key: text, value: res }]));
+
       if (newChatSession) {
         setCheckSessionId(0);
         let temp = {
@@ -49,7 +52,7 @@ export const ChatComponent = () => {
         if (result) {
           result?.sessionHistory?.push({ key: text, value: res });
           setHistory([...dummyResult]);
-          setCheckSessionId(0);
+          setCheckSessionId(idCounter);
         } else {
           setHistory([
             {
@@ -63,7 +66,6 @@ export const ChatComponent = () => {
       }
     }
   };
-  console.log(history);
 
   const handleEnter = async (e) => {
     if (e.key === "Enter") {
@@ -83,16 +85,13 @@ export const ChatComponent = () => {
   return (
     <>
       <SheetSide
-        setUserInput={setUserInput}
-        setMessages={setMessages}
-        messages={messages}
         history={history}
         checkNewChatSession={checkNewChatSession}
         setCheckSessionId={setCheckSessionId}
       />
       <div className="main">
         <div className="chats">
-          {messages.map((message, index) => (
+          {messages?.map((message, index) => (
             <div key={index}>
               <div key={`chat-${index}`} className="chat">
                 <p className="txt">{message?.key}</p>

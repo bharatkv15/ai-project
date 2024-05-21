@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { googleSpeechToText } from "../googleSpeechToText";
 import { Mic, MicOff } from "lucide-react";
 import { useDispatch } from "react-redux";
-import { updateUser2 } from "../features/userquery/UserSlice";
+import { updateSpeechToText } from "../features/userquery/SpeechToTextSlice";
 const SpeechToText = () => {
   const [recording, setRecording] = useState(false);
   const [mediaRecorder, setMediaRecorder] = useState(null);
@@ -29,7 +29,7 @@ const SpeechToText = () => {
         const audioBlob = event.data;
         const base64Audio = await googleSpeechToText(audioBlob);
         try {
-          dispatch(updateUser2(base64Audio));
+          dispatch(updateSpeechToText(base64Audio));
         } catch (error) {
           console.error("Error with Google Speech-to-Text API:", error);
         }

@@ -1,10 +1,10 @@
 import { configureStore } from "@reduxjs/toolkit";
-import userReducer from "./features/userquery/UserSlice";
-import userReducer2 from "./features/userquery/UserSlice2";
+import speechToTextReducer from "./features/userquery/SpeechToTextSlice";
+import messageReducer from "./features/userquery/MessageSlice";
  
 export default configureStore({
   reducer: {
-    user: userReducer,
-    user1: userReducer2,
+    user: speechToTextReducer,
+    message: messageReducer,
   },
 });

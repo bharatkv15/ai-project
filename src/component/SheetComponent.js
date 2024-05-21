@@ -7,22 +7,24 @@ import {
 } from "../components/ui/sheet";
 import { Button } from "../components/ui/button";
 import { Menu, Plus } from "lucide-react";
+import { useDispatch } from "react-redux";
+import { updateMessages } from "../features/userquery/MessageSlice";
 
 export const SheetSide = ({
-  setMessages,
   history,
   checkNewChatSession,
   setCheckSessionId,
 }) => {
+  const dispatch = useDispatch();
   const handleHistoryQuery = async (e) => {
     let result = history.find((obj) => obj?.id === e?.id);
     setCheckSessionId(result?.id);
-    setMessages([...result.sessionHistory]);
+    dispatch(updateMessages([...result.sessionHistory]));
   };
 
   const newChat = async () => {
     checkNewChatSession(true);
-    await setMessages([]);
+    await dispatch(updateMessages([]));
   };
 
   const sessionHistoryButton = history.map((e, index) => (
