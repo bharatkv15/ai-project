@@ -11,13 +11,14 @@ import { updateMessages } from "../features/userquery/MessageSlice";
 export const ChatComponent = () => {
   const speechToText = useSelector(
     (state) =>
-      state?.speechToText?.speechtoTextInfo?.data?.results[0]?.alternatives[0]?.transcript
+      state?.speechToText?.speechtoTextInfo?.data?.results[0]?.alternatives[0]
+        ?.transcript
   );
   const messages = useSelector((state) => state?.message?.chatInfo);
   const msgEnd = useRef(null);
   const [userInput, setUserInput] = useState("");
   const [history, setHistory] = useState([]);
-  const [checkSessionId, setCheckSessionId] = useState(0);
+  const [checkSessionId, setCheckSessionId] = useState(null);
   const [newChatSession, setNewChatSession] = useState(false);
   const [idCounter, setIdCounter] = useState(0);
   const dispatch = useDispatch();
@@ -31,29 +32,23 @@ export const ChatComponent = () => {
   }, [speechToText]);
 
   const handleUserSearch = async () => {
-    if (userInput !== "" && userInput !== undefined) {
-      const text = userInput;
-      setUserInput("");
-      const res = await sendMsgToGeminiAI(text);
-      dispatch(updateMessages([...messages, { key: text, value: res }]));
+    try {
+      if (userInput !== "" && userInput !== undefined) {
+        const text = userInput;
+        setUserInput("");
+        const res = await sendMsgToGeminiAI(text);
+        dispatch(updateMessages([...messages, { key: text, value: res }]));
 
-      if (newChatSession) {
-        setCheckSessionId(0);
-        let temp = {
-          id: idCounter,
-          sessionHistory: [...messages, { key: text, value: res }],
-        };
-        setIdCounter((c) => c + 1);
-        setHistory([...history, temp]);
-        setNewChatSession(false);
-      } else {
-        let dummyResult = [...history];
-        let result = dummyResult.find((e) => e?.id === checkSessionId);
-        if (result) {
-          result?.sessionHistory?.push({ key: text, value: res });
-          setHistory([...dummyResult]);
-          setCheckSessionId(idCounter);
-        } else {
+        if (newChatSession) {
+          setIdCounter((c) => c + 1);
+          let temp = {
+            id: idCounter,
+            sessionHistory: [...messages, { key: text, value: res }],
+          };
+          setHistory([...history, temp]);
+          setNewChatSession(false);
+          setCheckSessionId(null);
+        } else if (checkSessionId === null && idCounter === 0) {
           setHistory([
             {
               id: idCounter,
@@ -61,9 +56,24 @@ export const ChatComponent = () => {
             },
           ]);
           setIdCounter((c) => c + 1);
-          setCheckSessionId(0);
+        } else if (checkSessionId !== null) {
+          let dummyResult = [...history];
+          let result = dummyResult.find((e) => e?.id === checkSessionId);
+          if (result) {
+            result?.sessionHistory?.push({ key: text, value: res });
+            setHistory([...dummyResult]);
+          }
+        } else {
+          let dummyResult = [...history];
+          let result = dummyResult.find((e) => e?.id === (idCounter-1));
+          if (result) {
+            result?.sessionHistory?.push({ key: text, value: res });
+            setHistory([...dummyResult]);
+          }
         }
       }
+    } catch (error) {
+      console.error(error);
     }
   };
 
