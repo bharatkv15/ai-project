@@ -27,10 +27,6 @@ export const ChatComponent = () => {
     setUserInput(e.target.value);
   };
 
-  useEffect(() => {
-    setUserInput(speechToText);
-  }, [speechToText]);
-
   const handleUserSearch = async () => {
     try {
       if (userInput !== "" && userInput !== undefined) {
@@ -65,7 +61,7 @@ export const ChatComponent = () => {
           }
         } else {
           let dummyResult = [...history];
-          let result = dummyResult.find((e) => e?.id === (idCounter-1));
+          let result = dummyResult.find((e) => e?.id === idCounter - 1);
           if (result) {
             result?.sessionHistory?.push({ key: text, value: res });
             setHistory([...dummyResult]);
@@ -88,9 +84,39 @@ export const ChatComponent = () => {
     setNewChatSession(e);
   };
 
+  const messageParser = (message) => {
+    const lines = message.split("\n").filter((line) => line.trim() !== "");
+    const outputMessage = [];
+
+    lines.forEach((line, index) => {
+      if (line.startsWith("**") && line.endsWith("**")) {
+        outputMessage.push(<b key={index}>{line.replace(/\*\*/g, "")}</b>);
+      } else if (line.startsWith("* **")) {
+        const parts = line.split(":");
+        outputMessage.push(
+          <li key={index}>
+            <strong>{parts[0].replace(/\*\*/g, "")}</strong>:{" "}
+            {parts.slice(1).join(":").trim()}
+          </li>
+        );
+      } else if (line.startsWith("*")) {
+        outputMessage.push(<li key={index}>{line.replace("* ", "")}</li>);
+      } else if (line === "") {
+      } else {
+        outputMessage.push(<p key={index}>{line}</p>);
+      }
+    });
+
+    return outputMessage;
+  };
+
   useEffect(() => {
     msgEnd.current.scrollIntoView();
   }, [messages]);
+
+  useEffect(() => {
+    setUserInput(speechToText);
+  }, [speechToText]);
 
   return (
     <>
@@ -107,7 +133,7 @@ export const ChatComponent = () => {
                 <p className="txt">{message?.key}</p>
               </div>
               <div key={`bot-${index}`} className="chat bot">
-                <p className="txt">{message?.value}</p>
+                <p className="txt">{messageParser(message?.value)}</p>
               </div>
             </div>
           ))}
