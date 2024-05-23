@@ -17,7 +17,7 @@ export const SignIn = () => {
         navigate('/');
       })
       .catch((error) => {
-        alert(error)
+        alert('Invalid Credential, please try again !')
         console.log(error);
       });
     } catch(error) {

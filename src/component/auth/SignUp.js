@@ -16,6 +16,7 @@ export const SignUp = () => {
         console.log("User Created Successfully !");
       })
       .catch((error) => {
+        alert('Please try again !')
         console.log(error);
       });
   };
