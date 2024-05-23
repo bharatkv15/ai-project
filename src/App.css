@@ -13,10 +13,6 @@ body {
   color: white;
 }
 
-.App {
-  min-height: 100vh;
-  display: flex;
-}
 
 .sideBar {
   flex: 3;
@@ -86,7 +82,7 @@ body {
 }
 
 .main {
-  min-height: calc(100vh - 14rem);
+  min-height: calc(100vh - 20rem);
   display: flex;
   flex: auto;
   flex-direction: column;
@@ -183,12 +179,110 @@ body {
   text-align: center;
 }
 
+.headingClass {
+  margin-left: 50%;
+}
+
 .hamburgerMenu {
-  margin: 2rem;
+  margin: -3.75rem 0rem 0rem 1rem;
 }
 
 @media screen and (max-width: 768px) {
   .main {
     margin: 2rem 2rem;
   }
+}
+
+/* SignIn/SignUp CSS */
+/* SignInForm.css */
+
+.signin-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: #f7f8fa;
+}
+
+.signin-form {
+  background: #ffffff;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 400px;
+}
+
+.signin-form h2 {
+  margin-bottom: 1rem;
+  font-size: 24px;
+  color: #333;
+}
+
+.form-group {
+  margin-bottom: 1rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: #555;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 16px;
+  color: #333;
+}
+
+.form-group input:focus {
+  border-color: #007bff;
+  outline: none;
+}
+
+.signin-button {
+  width: 100%;
+  padding: 0.75rem;
+  background-color: #007bff;
+  border: none;
+  border-radius: 4px;
+  font-size: 16px;
+  color: #ffffff;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.signin-button:hover {
+  background-color: #0056b3;
+}
+
+.registeruser-link {
+  margin-top: 8px;
+  color: gray;
+  font-size: 12px;
+  text-align: center;
+}
+
+.registeruser-link:hover {
+  color: blue;
+}
+
+/* Auth Dashboard */
+.dashHeading {
+  margin-top: 60px;
+  font-size: 24px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.dashUserData {
+  margin-top: 24px;
+  font-size: 18px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
