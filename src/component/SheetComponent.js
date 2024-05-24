@@ -9,13 +9,41 @@ import { Button } from "../components/ui/button";
 import { Menu, Plus } from "lucide-react";
 import { useDispatch } from "react-redux";
 import { updateMessages } from "../features/userquery/MessageSlice";
+import { doc, getDoc } from "firebase/firestore/lite";
+import { db } from "../firebase";
+import { useEffect } from "react";
 
 export const SheetSide = ({
+  messages,
+  setHistory,
+  authUser,
   history,
   checkNewChatSession,
   setCheckSessionId,
 }) => {
   const dispatch = useDispatch();
+
+  const checkUserHistory = async () => {
+    if (authUser) {
+      const userDocRef = await doc(db, "users", authUser.uid);
+      const docSnap = await getDoc(userDocRef);
+      let docSnapArray = [];
+      if (docSnap.exists()) {
+        let test = docSnap.data()
+        for (const obj in test) {
+          docSnapArray.push(test[obj]);
+        }
+        setHistory(docSnapArray)
+      } else {
+        console.log("No such document!");
+      }
+    }
+  };
+
+  useEffect(() => {
+    checkUserHistory();
+  }, [messages, authUser]);
+
   const handleHistoryQuery = async (e) => {
     let result = history.find((obj) => obj?.id === e?.id);
     setCheckSessionId(result?.id);

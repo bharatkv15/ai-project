@@ -8,7 +8,7 @@ import { sendMsgToGeminiAI } from "../geminiai";
 import { SheetSide } from "./SheetComponent";
 import { useDispatch, useSelector } from "react-redux";
 import { updateMessages } from "../features/userquery/MessageSlice";
-import { addDoc, collection, serverTimestamp } from "firebase/firestore/lite";
+import { doc, serverTimestamp, setDoc, getDoc } from "firebase/firestore/lite";
 import { db } from "../firebase";
 
 export const ChatComponent = ({ authUser }) => {
@@ -33,10 +33,13 @@ export const ChatComponent = ({ authUser }) => {
 
   const setFireStoreData = async (history) => {
     try {
-      await addDoc(collection(db, "users", authUser.uid, "history"), {
-        ...history,
-        timeStamp: serverTimestamp(),
-      });
+      if (authUser) {
+        const userDocRef = doc(db, "users", authUser.uid);
+        await setDoc(userDocRef, {
+          ...history,
+          // timeStamp: serverTimestamp(),
+        });
+      }
     } catch (error) {
       console.log(error);
     }
@@ -59,7 +62,7 @@ export const ChatComponent = ({ authUser }) => {
           setHistory([...history, temp]);
           setNewChatSession(false);
           setCheckSessionId(null);
-          setFireStoreData(history);
+          setFireStoreData([...history, temp]);
         } else if (checkSessionId === null && idCounter === 0) {
           setHistory([
             {
@@ -68,7 +71,29 @@ export const ChatComponent = ({ authUser }) => {
             },
           ]);
           setIdCounter((c) => c + 1);
-          setFireStoreData(history);
+          if (authUser) {
+            const userDocRef = await doc(db, "users", authUser.uid);
+            const docSnap = await getDoc(userDocRef);
+            let docSnapArray = [];
+            if (docSnap.exists()) {
+              let test = docSnap.data();
+              for (const obj in test) {
+                docSnapArray.push(test[obj]);
+              }
+              if (docSnapArray.length > 0) {
+                setFireStoreData([...docSnapArray,
+                  {
+                    id: idCounter,
+                    sessionHistory: [...messages, { key: text, value: res }],
+                  },
+                ]);
+              } else {
+                setFireStoreData(...history)
+              }
+            } else {
+              console.log("No such document!");
+            }
+          }
         } else if (checkSessionId !== null) {
           let dummyResult = [...history];
           let result = dummyResult.find((e) => e?.id === checkSessionId);
@@ -76,15 +101,15 @@ export const ChatComponent = ({ authUser }) => {
             result?.sessionHistory?.push({ key: text, value: res });
             setHistory([...dummyResult]);
           }
-          setFireStoreData(history);
+          setFireStoreData([...dummyResult]);
         } else {
           let dummyResult = [...history];
           let result = dummyResult.find((e) => e?.id === idCounter - 1);
           if (result) {
             result?.sessionHistory?.push({ key: text, value: res });
             setHistory([...dummyResult]);
+            setFireStoreData([...dummyResult]);
           }
-          setFireStoreData(history);
         }
       }
     } catch (error) {
@@ -140,6 +165,9 @@ export const ChatComponent = ({ authUser }) => {
   return (
     <>
       <SheetSide
+        messages={messages}
+        setHistory={setHistory}
+        authUser={authUser}
         history={history}
         checkNewChatSession={checkNewChatSession}
         setCheckSessionId={setCheckSessionId}
