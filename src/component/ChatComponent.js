@@ -8,19 +8,10 @@ import { sendMsgToGeminiAI } from "../geminiai";
 import { SheetSide } from "./SheetComponent";
 import { useDispatch, useSelector } from "react-redux";
 import { updateMessages } from "../features/userquery/MessageSlice";
-import {
-  addDoc,
-  collection,
-  serverTimestamp,
-} from "firebase/firestore/lite";
+import { addDoc, collection, serverTimestamp } from "firebase/firestore/lite";
 import { db } from "../firebase";
 
 export const ChatComponent = ({ authUser }) => {
-  const speechToText = useSelector(
-    (state) =>
-      state?.speechToText?.speechtoTextInfo?.data?.results[0]?.alternatives[0]
-        ?.transcript
-  );
   const messages = useSelector((state) => state?.message?.chatInfo);
   const msgEnd = useRef(null);
   const [userInput, setUserInput] = useState("");
@@ -29,20 +20,26 @@ export const ChatComponent = ({ authUser }) => {
   const [newChatSession, setNewChatSession] = useState(false);
   const [idCounter, setIdCounter] = useState(0);
   const dispatch = useDispatch();
+  const speechToText = useSelector((state) =>
+    state?.speechToText?.speechtoTextInfo?.data?.results !== undefined
+      ? state?.speechToText?.speechtoTextInfo?.data?.results[0]?.alternatives[0]
+          ?.transcript
+      : ""
+  );
 
   const handleInputChange = (e) => {
     setUserInput(e.target.value);
   };
 
   const setFireStoreData = async (history) => {
-   try {
-    await addDoc(collection(db, "users", authUser.uid, 'history'), {
-      ...history,
-      timeStamp: serverTimestamp()
-    });
-   } catch(error) {
-    console.log(error);
-   }
+    try {
+      await addDoc(collection(db, "users", authUser.uid, "history"), {
+        ...history,
+        timeStamp: serverTimestamp(),
+      });
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const handleUserSearch = async () => {

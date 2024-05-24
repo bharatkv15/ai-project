@@ -82,7 +82,7 @@ body {
 }
 
 .main {
-  min-height: calc(100vh - 20rem);
+  min-height: calc(100vh - 14rem);
   display: flex;
   flex: auto;
   flex-direction: column;
@@ -180,7 +180,7 @@ body {
 }
 
 .headingClass {
-  margin-left: 50%;
+  margin-left: 45%;
 }
 
 .hamburgerMenu {
