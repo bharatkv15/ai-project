@@ -29,9 +29,9 @@ export const SheetSide = ({
       const docSnap = await getDoc(userDocRef);
       let docSnapArray = [];
       if (docSnap.exists()) {
-        let test = docSnap.data()
-        for (const obj in test) {
-          docSnapArray.push(test[obj]);
+        let userDocSnap = docSnap.data()
+        for (const obj in userDocSnap) {
+          docSnapArray.push(userDocSnap[obj]);
         }
         setHistory(docSnapArray)
       } else {
