@@ -8,7 +8,7 @@ import { sendMsgToGeminiAI } from "../geminiai";
 import { SheetSide } from "./SheetComponent";
 import { useDispatch, useSelector } from "react-redux";
 import { updateMessages } from "../features/userquery/MessageSlice";
-import { doc, serverTimestamp, setDoc, getDoc } from "firebase/firestore/lite";
+import { doc, setDoc, getDoc } from "firebase/firestore/lite";
 import { db } from "../firebase";
 
 export const ChatComponent = ({ authUser }) => {
@@ -81,14 +81,15 @@ export const ChatComponent = ({ authUser }) => {
                 docSnapArray.push(test[obj]);
               }
               if (docSnapArray.length > 0) {
-                setFireStoreData([...docSnapArray,
+                setFireStoreData([
+                  ...docSnapArray,
                   {
                     id: idCounter,
                     sessionHistory: [...messages, { key: text, value: res }],
                   },
                 ]);
               } else {
-                setFireStoreData(...history)
+                setFireStoreData(...history);
               }
             } else {
               console.log("No such document!");
@@ -129,29 +130,35 @@ export const ChatComponent = ({ authUser }) => {
   };
 
   const messageParser = (message) => {
-    const lines = message.split("\n").filter((line) => line.trim() !== "");
-    const outputMessage = [];
+    try {
+      const lines = message.split("\n").filter((line) => line.trim() !== "");
+      const outputMessage = [];
 
-    lines.forEach((line, index) => {
-      if (line.startsWith("**") && line.endsWith("**")) {
-        outputMessage.push(<b key={index}>{line.replace(/\*\*/g, "")}</b>);
-      } else if (line.startsWith("* **")) {
-        const parts = line.split(":");
-        outputMessage.push(
-          <li key={index}>
-            <strong>{parts[0].replace(/\*\*/g, "")}</strong>:{" "}
-            {parts.slice(1).join(":").trim()}
-          </li>
-        );
-      } else if (line.startsWith("*")) {
-        outputMessage.push(<li key={index}>{line.replace("* ", "")}</li>);
-      } else if (line === "") {
-      } else {
-        outputMessage.push(<p key={index}>{line}</p>);
-      }
-    });
+      lines.forEach((line, index) => {
+        if (line.startsWith("**") && line.endsWith("**")) {
+          outputMessage.push(<b key={index}>{line.replace(/\*\*/g, "")}</b>);
+        } else if (line.startsWith("* **")) {
+          const parts = line.split(":");
+          outputMessage.push(
+            <li key={index}>
+              <strong>{parts[0].replace(/\*\*/g, "")}</strong>:{" "}
+              {parts.slice(1).join(":").trim()}
+            </li>
+          );
+        } else if (line.startsWith("*")) {
+          outputMessage.push(<li key={index}>{line.replace("* ", "")}</li>);
+        } else if (line === "") {
+        } else {
+          outputMessage.push(<p key={index}>{line}</p>);
+        }
+      });
 
-    return outputMessage;
+      return outputMessage;
+    } catch (error) {
+      alert("Something went wrong, please try sometime !");
+      // console.log(error);
+      return "Something went wrong, please try after sometime !";
+    }
   };
 
   useEffect(() => {
